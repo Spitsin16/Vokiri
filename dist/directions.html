@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="ru">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#efefec"><title>English Hub — три концепции продукта</title><link rel="stylesheet" href="./directions.css"><link rel="icon" href="./icon.svg"></head>
+<body>
+<header class="board-header"><a href="./studio.html">English Hub <span>/ design studies 02</span></a><a href="./#today">Приложение ↗</a></header>
+<main class="board">
+<div class="board-intro"><span class="eyebrow">Перед разработкой бэкенда / варианты для обсуждения</span><h1>Три способа<br>прожить свой английский.</h1><p>Выбираем устройство продукта: личный кабинет, занятие без отвлечений или журнал историй. Переключайте направления и проходите один сценарий в разных интерфейсах.</p></div>
+<div class="direction-picker" role="group" aria-label="Концепция продукта">
+<button data-direction="vokiri" aria-pressed="true"><span>01 / Личное пространство</span><strong>vokiri</strong><small>Обзор → выбор занятия</small></button>
+<button data-direction="rekio" aria-pressed="false"><span>02 / Одно следующее действие</span><strong>rekio</strong><small>Начать → пройти маршрут</small></button>
+<button data-direction="vekri" aria-pressed="false"><span>03 / Личный журнал</span><strong>vekri</strong><small>История → слова → повторение</small></button>
+</div>
+<section class="comparison" aria-label="Интерактивное сравнение">
+<aside id="direction-notes"></aside>
+<div class="preview-area"><div class="preview-toolbar"><div role="group" aria-label="Экран макета"><button data-screen="home" aria-pressed="true">Главная</button><button data-screen="review" aria-pressed="false">Повторение</button><button data-screen="reading" aria-pressed="false">Чтение</button></div><button id="width-toggle" aria-pressed="false">Шире ↔</button></div>
+<p class="prototype-note">Кликабельный дизайн-макет · примерный словарь · AI не подключён · ваш прогресс не меняется</p>
+<div class="preview-stage"><div id="product-preview" class="product vokiri"></div></div>
+<p id="preview-feedback" class="feedback" role="status" aria-live="polite"></p>
+</div>
+</section>
+<section class="reading-contract" id="reading-contract"><div><span class="eyebrow">Одна тема. Ваши слова. Разная сложность.</span><h2>История меняет язык,<br>сохраняя смысл.</h2><p>В готовом продукте текст создаётся для человека. Примеры в макетах показывают будущий сценарий; они написаны заранее для сравнения дизайна.</p></div><div class="contract-steps"><article><b>01</b><h3>Появляется новая история</h3><p>Выбираем тему по интересам и несколько подходящих слов из личного словаря. Создаём сюжет и текст под текущий уровень.</p></article><article><b>02</b><h3>A2 → B1 → B2</h3><p>Сохраняем тему, героев, основные события и целевые значения слов. Переписываем лексику, синтаксис и пояснения под новый уровень.</p></article><article><b>03</b><h3>«Другой текст»</h3><p>Та же тема, новый сюжет и примеры употребления. Слова могут пересекаться, но история не должна повторять предыдущую.</p></article><article><b>04</b><h3>Слово выше уровня?</h3><p>Оставляем его с простым объяснением, если оно естественно в истории. Остальное окружение должно оставаться посильным.</p></article></div><a href="./brand/reading-generation.md" class="document-link">Полный сценарий: генерация, смена уровня и ошибки ↗</a></section>
+<section class="decision-note"><span class="eyebrow">Что выбираем</span><h2>Сначала способ пользоваться.<br>Затем окончательное имя.</h2><p>Название и интерфейс можно выбирать отдельно. Vokiri сохраняет близость к исходному референсу. Rekio делает главным ежедневное занятие. Vekri строит продукт вокруг чтения. Ни одно направление пока не утверждено.</p><p class="small-note">Имена — рабочие кандидаты. Предварительный веб-поиск не заменяет проверку доступности. Домены и товарные знаки не проверены; совпадения вне языковых приложений возможны.</p><a href="./brand/design-directions.md" class="document-link">Аргументы и ограничения каждого направления ↗</a></section>
+</main>
+<dialog id="scenario-dialog"><button class="dialog-close" data-action="close-dialog" aria-label="Закрыть">×</button><span class="eyebrow">Сценарий будущего продукта</span><h2>Другой текст.<br>Та же тема.</h2><p>Приложение создаст новый сюжет о работе и общении на выбранном уровне, используя подходящие слова из вашего словаря.</p><p>Текущий текст останется доступен, пока новый не будет готов. При ошибке можно повторить запрос.</p><p class="small-note">Сейчас мы сравниваем дизайн. Генератор пока не подключён.</p><button class="dialog-done" data-action="close-dialog">Вернуться к макету</button></dialog>
+<script src="./directions.js"></script>
+</body></html>

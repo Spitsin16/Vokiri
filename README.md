@@ -37,3 +37,9 @@ Open `/studio.html` for the Vokiri concept, identity system, an isolated schedul
 The brand kit is in `dist/brand/vokiri-kit.zip`, including vector marks, app icons, tokens and guides. See `docs/product-model.md` for the proposed FSRS-based production direction, explicit prototype formulas and the Reading selection proposal. Names and thresholds are unvalidated proposals.
 
 Run `node tests/check-model.cjs` and `node tests/check-app.cjs` to validate scheduling invariants, migration, free practice, quotas, import preservation and level selection without browser automation.
+
+## Interface directions and generated Reading scenario
+
+`/directions.html` compares three distinct interfaces: Vokiri (dashboard), Rekio (focused session), and Vekri (editorial journal). Each has its own home, review and reading layout. The shared authored excerpt can be switched between A2/B1/B2. This isolated design study does not read or change personal progress and does not call AI.
+
+The user confirmed that scenario and branding come before backend implementation. See `docs/reading-generation.md`: future Reading must generate personal texts, preserve topic/plot/target meanings on level changes, and create a new plot for “Another text”. The current nine prepared articles are explicitly not the implementation of this future requirement. See `docs/design-directions.md` for naming and interface tradeoffs.
