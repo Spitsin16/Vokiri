@@ -23,3 +23,9 @@ Navigation: Today, Vocabulary, Reading, Translator. Quick Add and Import open as
 - Data belongs to the current browser and origin; private deployment does not sync it between devices.
 
 All seven requested MVP scenarios are represented. No excluded features have been added.
+
+## Install on iPhone
+
+Open the deployed link in Safari and sign in with the Site owner's account if requested. Use Share → Add to Home Screen, keep Open as Web App enabled when offered, then Add. The manifest and Apple metadata provide the name, icon and standalone launch; iOS performs installation. The app starts on Today.
+
+This is an installed web app, not an App Store binary. An internet connection is required to load it; no service worker or offline authentication cache is installed. Vocabulary remains local to the browser/app storage and is not synchronised from the computer.
