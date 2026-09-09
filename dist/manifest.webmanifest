@@ -1,7 +1,7 @@
 {
   "id": "/",
-  "name": "English Hub",
-  "short_name": "English Hub",
+  "name": "Vokiri — Personal English",
+  "short_name": "Vokiri",
   "description": "Your words. Your daily English.",
   "lang": "ru",
   "start_url": "/#today",

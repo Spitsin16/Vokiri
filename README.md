@@ -1,4 +1,4 @@
-# English Hub
+# Vokiri
 
 Interactive mobile-first MVP using plain HTML, CSS and JavaScript. No backend, authentication, AI API or server-side data storage.
 
@@ -32,9 +32,9 @@ This is an installed web app, not an App Store binary. An internet connection is
 
 ## Brand and model review
 
-Open `/studio.html` for the Vokiri concept, identity system, an isolated scheduling simulator and a live mobile preview. Vokiri is a naming proposal, not an approved rename. The regular app remains English Hub; `/?brand=vokiri` enables the brand preview.
+Open `/studio.html` for the Vokiri concept, identity system, an isolated scheduling simulator and a live mobile preview. Vokiri is now the selected name and is applied in the main app. The original milk/lime palette is retained. The outlined Avenir Next Bold wordmark replaces its first v with the approved quote mark. Existing `?brand=vokiri` links still open the same application.
 
-The brand kit is in `dist/brand/vokiri-kit.zip`, including vector marks, app icons, tokens and guides. See `docs/product-model.md` for the proposed FSRS-based production direction, explicit prototype formulas and the Reading selection proposal. Names and thresholds are unvalidated proposals.
+The brand kit is in `dist/brand/vokiri-kit.zip`, including vector marks, app icons, tokens and guides. See `docs/product-model.md` for the proposed FSRS-based production direction, explicit prototype formulas and the Reading selection proposal. Memory thresholds remain unvalidated proposals. Brand selection does not establish name availability.
 
 Run `node tests/check-model.cjs` and `node tests/check-app.cjs` to validate scheduling invariants, migration, free practice, quotas, import preservation and level selection without browser automation.
 
