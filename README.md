@@ -2,6 +2,10 @@
 
 Interactive mobile-first MVP using plain HTML, CSS and JavaScript. No backend, authentication, AI API or server-side data storage.
 
+## Developer handoff
+
+[Download the complete developer kit](handoff/Vokiri-Developer-Kit.zip): logos, avatars, icons, font files with licenses, color tokens, and reference UI. [Integration guide](handoff/Vokiri-Developer-Kit/README-RU.md). The unpacked files are in `handoff/Vokiri-Developer-Kit/`.
+
 ## Open locally
 
 Run `python3 -m http.server 4173 --bind 127.0.0.1 --directory dist` and open http://127.0.0.1:4173.

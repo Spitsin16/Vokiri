@@ -1,0 +1,23 @@
+{
+  "brand": {
+    "paper": "#F3F3ED",
+    "ink": "#262C20",
+    "signal": "#D6F477",
+    "olive": "#637239",
+    "quiet": "#E2E7D9",
+    "white": "#FFFFFF",
+    "muted": "#656B5B",
+    "weak": "#875934",
+    "weakSurface": "#F7EDE3"
+  },
+  "currentInterfaceRoot": {
+    "bg": "#f3f3ed",
+    "ink": "#25271f",
+    "muted": "#74776b",
+    "line": "#e0e2d7",
+    "lime": "#d6f477",
+    "olive": "#424d1c",
+    "white": "#fff",
+    "radius": "30px"
+  }
+}

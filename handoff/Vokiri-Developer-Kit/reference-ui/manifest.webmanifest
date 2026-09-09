@@ -1,0 +1,26 @@
+{
+  "id": "/reference-ui/",
+  "name": "Vokiri — Personal English",
+  "short_name": "Vokiri",
+  "description": "Your words. Your daily English.",
+  "lang": "ru",
+  "start_url": "/reference-ui/#today",
+  "scope": "/reference-ui/",
+  "display": "standalone",
+  "background_color": "#f3f3ed",
+  "theme_color": "#f3f3ed",
+  "icons": [
+    {
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ]
+}
