@@ -40,10 +40,6 @@ class DictionarySource(Base):
     
 class Lexeme(Base):
     __tablename__ = "lexemes"
-
-    __table_args__ = (UniqueConstraint("source_id","normalized_lemma","part_of_speech",
-                                       name="uq_lexeme_source_lemma_pos",),)
-
     id: Mapped[int] = mapped_column(primary_key=True)
 
     source_id: Mapped[int] = mapped_column(ForeignKey("dictionary_sources.id",ondelete="CASCADE"),
@@ -127,12 +123,6 @@ class Translation(Base):
         UniqueConstraint(
             "sense_id",
             "language",
-            "normalized_text",
-            name="uq_translation_sense_language_text",
-        ),
-        UniqueConstraint(
-            "sense_id",
-            "language",
             "source_order",
             name="uq_translation_sense_language_order",
         ),
@@ -183,12 +173,6 @@ class Definition(Base):
         UniqueConstraint(
             "sense_id",
             "language",
-            "text_sha256",
-            name="uq_definition_sense_language_hash",
-        ),
-        UniqueConstraint(
-            "sense_id",
-            "language",
             "source_order",
             name="uq_definition_sense_language_order",
         ),
@@ -219,11 +203,6 @@ class Pronunciation(Base):
     )
 
     __table_args__ = (
-        UniqueConstraint(
-            "lexeme_id",
-            "text",
-            name="uq_pronunciation_lexeme_text",
-        ),
         UniqueConstraint(
             "lexeme_id",
             "source_order",
