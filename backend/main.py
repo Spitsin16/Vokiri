@@ -1,4 +1,4 @@
-from fastapi import FastAPI, Depends,HTTPException
+from fastapi import FastAPI, Depends,HTTPException, Query
 
 from sqlalchemy import select
 from sqlalchemy.orm import Session
@@ -45,3 +45,17 @@ def lookup_word(word: str, db: Session=Depends(get_db)):
             "part_of_speech": lexeme.part_of_speech,
             "pronunciations": pronunciations,
             "meanings": meanings}
+
+@app.get("/dictionary/search")
+def search(q: str = Query(min_length=2), db: Session=Depends(get_db)):
+    normalized_q = q.strip().casefold()
+
+    if len(normalized_q) < 2:
+        raise HTTPException(status_code=404,detail="Enter at least 2 characters")
+    
+    statement = (select(Lexeme.lemma).where(Lexeme.normalized_lemma.startswith(normalized_q,autoescape=True)).distinct().order_by(Lexeme.lemma).limit(5))
+
+    words = db.scalars(statement).all()
+
+    return {"query": q,
+    "results": words}
