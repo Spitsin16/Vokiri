@@ -3,7 +3,7 @@ from fastapi import APIRouter, Query, HTTPException, Depends
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
-from backend.models import Lexeme, Pronunciation, Translation, SourceSense
+from backend.models import Lexeme, Pronunciation, Translation, SourceSense, Definition
 from backend.database import get_db
 
 router = APIRouter(prefix="/dictionary",tags=["dictionary"])
