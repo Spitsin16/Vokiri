@@ -5,8 +5,12 @@ from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from backend.database import Base, engine
-from backend.import_freedict import DATASET_PATH, iter_entries, DictionaryEntry
-from backend.models import Definition, DictionarySource, Lexeme, Pronunciation, SourceSense,Translation
+from backend.importers.freedict_parser import (
+    DATASET_PATH,
+    DictionaryEntry,
+    iter_entries,
+)
+from backend.models.dictionary import Definition, DictionarySource, Lexeme, Pronunciation, SourceSense,Translation
 
 SOURCE_NAME = "FreeDict English-Russian"
 SOURCE_VERSION = "2025.11.23"

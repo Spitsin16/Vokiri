@@ -6,8 +6,8 @@ from typing import Iterator
 import xml.etree.ElementTree as ET
 
 
-BASE_DIR = Path(__file__).resolve().parent
-DATASET_PATH = BASE_DIR / "data" / "raw" / "eng-rus.tei"
+BACKEND_DIR = Path(__file__).resolve().parents[1]
+DATASET_PATH = BACKEND_DIR / "data" / "raw" / "eng-rus.tei"
 
 TEI_NAMESPACE = "{http://www.tei-c.org/ns/1.0}"
 
