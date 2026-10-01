@@ -22,3 +22,5 @@ uvloop==0.22.1
 watchfiles==1.2.0
 websockets==17.1
 pwdlib[argon2]==0.3.1
+email-validator==2.3.0
+PyJWT==2.15.1
