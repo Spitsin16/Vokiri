@@ -1,0 +1,11 @@
+.DS_Store
+.env
+.env.*
+!.env.example
+node_modules/
+__pycache__/
+*.pyc
+.venv/
+handoff/Vokiri-Developer-Kit 2/
+backend/vokiri.db
+backend/data/raw/
