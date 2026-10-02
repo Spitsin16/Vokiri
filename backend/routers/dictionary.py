@@ -1,58 +1,27 @@
 from fastapi import APIRouter, Query, HTTPException, Depends
 
-from sqlalchemy import select
 from sqlalchemy.orm import Session
 
-from backend.models.dictionary import Lexeme, Pronunciation, Translation, SourceSense, Definition
 from backend.database import get_db
+from backend.service.dictionary_service import DictionaryService
 
 router = APIRouter(prefix="/dictionary",tags=["dictionary"])
 
 @router.get("/lookup")
 def lookup_word(word: str, db: Session=Depends(get_db)):
-    normalized_word = word.strip().casefold()
-    meanings=[]
-    
-    lexeme = db.scalar(select(Lexeme).where(Lexeme.normalized_lemma==normalized_word).limit(1))
+    service = DictionaryService(db)
 
-    if not lexeme:
+    try:
+        return service.lookup_word(word)
+    except ValueError:
         raise HTTPException(status_code=404, detail="Word not found")
-    
-    senses = db.scalars(select(SourceSense).where(SourceSense.lexeme_id==lexeme.id).order_by(SourceSense.source_order)).all()
-    
-    for sense in senses:
-        trans=db.scalars(select(Translation).where(Translation.sense_id==sense.id).order_by(Translation.source_order)).all()
-        translations=[]
-        for tran in trans:
-            translations.append(tran.text)
-        definits=db.scalars(select(Definition).where(Definition.sense_id==sense.id).order_by(Definition.source_order)).all()
-        definitions=[]
-        for definit in definits:
-            definitions.append(definit.text)
-
-        meanings.append({"sense_id": sense.id,
-                         "order": sense.source_order,
-                         "translations": translations,
-                         "definitions": definitions})
-    pronunciations = db.scalars(select(Pronunciation.text).where(Pronunciation.lexeme_id == lexeme.id).order_by(Pronunciation.source_order)).all()
-
-    return {"id": lexeme.id,
-            "word": lexeme.lemma,
-            "part_of_speech": lexeme.part_of_speech,
-            "pronunciations": pronunciations,
-            "meanings": meanings}
 
 @router.get("/search")
 def search(q: str = Query(min_length=2), db: Session=Depends(get_db)):
-    normalized_q = q.strip().casefold()
+    service = DictionaryService(db)
 
-    if len(normalized_q) < 2:
-        raise HTTPException(status_code=404,detail="Enter at least 2 characters")
-    
-    statement = (select(Lexeme.lemma).where(Lexeme.normalized_lemma.startswith(normalized_q,autoescape=True)).distinct().order_by(Lexeme.lemma).limit(5))
-
-    words = db.scalars(statement).all()
-
-    return {"query": q,
-    "results": words}
+    try:
+        return service.search(q)
+    except ValueError:
+        raise HTTPException(status_code=422, detail="Enter at least 2 characters")
 
