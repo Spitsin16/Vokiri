@@ -1,5 +1,6 @@
 import backend.models.dictionary
 import backend.models.user
+import backend.models.user_word
 
 from backend.database import Base, engine
 
