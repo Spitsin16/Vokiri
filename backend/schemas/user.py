@@ -21,4 +21,8 @@ class TokenResponse(BaseModel):
     access_token: str
     token_type: str 
 
+class AddWord(BaseModel):
+    sense_id: int = Field(gt=0)
+
+
 

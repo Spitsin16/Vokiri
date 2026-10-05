@@ -1,5 +1,5 @@
 from fastapi import FastAPI
-from backend.routers import dictionary, auth
+from backend.routers import dictionary, auth, user_words
 
 app = FastAPI(title="Vokiri API")
 
@@ -9,3 +9,4 @@ def health():
 
 app.include_router(dictionary.router)
 app.include_router(auth.router)
+app.include_router(user_words.router)
