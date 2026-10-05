@@ -1,6 +1,6 @@
 from sqlalchemy.orm import Session
 from sqlalchemy import select
-from backend.models.dictionary import SourceSense
+from backend.models.dictionary import SourceSense, Lexeme, Translation
 from backend.models.user_word import UserWord
 
 class UserWordService:
@@ -26,3 +26,23 @@ class UserWordService:
         self.db.refresh(user_word)
 
         return user_word
+    
+    def get_all_words(self, user_id: int):
+        words = self.db.scalars(select(UserWord).where(UserWord.user_id == user_id)).all()
+        result = []
+        for word in words:
+            sense = self.db.scalar(select(SourceSense).where(SourceSense.id == word.source_sense_id))
+            lexeme = self.db.scalar(select(Lexeme).where(Lexeme.id == sense.lexeme_id))
+            translations = self.db.scalars(select(Translation.text).where(Translation.sense_id == sense.id).order_by(Translation.source_order)).all()
+
+            result.append(
+            {
+                "id": word.id,
+                "sense_id": sense.id,
+                "word": lexeme.lemma,
+                "translation": translations,
+                "is_active": word.is_active,
+                "created_at": word.created_at,
+            }
+        )
+        return result

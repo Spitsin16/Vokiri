@@ -19,4 +19,11 @@ def add_word(data: AddWord, db: Session = Depends(get_db), current_user: User = 
         raise HTTPException(status_code=404, detail="Meaning not found")
     except ValueError:
         raise HTTPException(status_code=409, detail="Word already in dictionary")
+
+@router.get("/get_all_words")
+def get_words(db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
+
+    service = UserWordService(db)
+
+    return service.get_all_words(current_user.id)
     
