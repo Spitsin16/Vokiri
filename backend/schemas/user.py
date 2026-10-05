@@ -24,5 +24,8 @@ class TokenResponse(BaseModel):
 class AddWord(BaseModel):
     sense_id: int = Field(gt=0)
 
+class DeleteWordResponse(BaseModel):
+    source_sense_id: int
+    is_active: bool 
 
 

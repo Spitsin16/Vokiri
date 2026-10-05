@@ -17,7 +17,14 @@ class UserWordService:
         sense_in_user_word = self.db.scalar(select(UserWord).where(UserWord.source_sense_id == sense_id,UserWord.user_id == user_id))
 
         if sense_in_user_word is not None:
-            raise ValueError("Meaning already in dictionary")
+            if sense_in_user_word.is_active is True:
+                raise ValueError("Meaning already in dictionary")
+            
+            sense_in_user_word.is_active = True
+            self.db.commit()
+            self.db.refresh(sense_in_user_word)
+
+            return sense_in_user_word
         
         user_word = UserWord(user_id = user_id, source_sense_id = sense_id )
 
@@ -31,18 +38,32 @@ class UserWordService:
         words = self.db.scalars(select(UserWord).where(UserWord.user_id == user_id)).all()
         result = []
         for word in words:
-            sense = self.db.scalar(select(SourceSense).where(SourceSense.id == word.source_sense_id))
-            lexeme = self.db.scalar(select(Lexeme).where(Lexeme.id == sense.lexeme_id))
-            translations = self.db.scalars(select(Translation.text).where(Translation.sense_id == sense.id).order_by(Translation.source_order)).all()
+            if word.is_active == True:
+                sense = self.db.scalar(select(SourceSense).where(SourceSense.id == word.source_sense_id))
+                lexeme = self.db.scalar(select(Lexeme).where(Lexeme.id == sense.lexeme_id))
+                translations = self.db.scalars(select(Translation.text).where(Translation.sense_id == sense.id).order_by(Translation.source_order)).all()
 
-            result.append(
-            {
-                "id": word.id,
-                "sense_id": sense.id,
-                "word": lexeme.lemma,
-                "translation": translations,
-                "is_active": word.is_active,
-                "created_at": word.created_at,
-            }
-        )
+                result.append(
+                {
+                    "id": word.id,
+                    "sense_id": sense.id,
+                    "word": lexeme.lemma,
+                    "translation": translations,
+                    "is_active": word.is_active,
+                    "created_at": word.created_at,
+                }
+            )
         return result
+    
+    def delete_word(self, user_id: int, sense_id: int):
+        word = self.db.scalar(select(UserWord).where(UserWord.source_sense_id == sense_id,UserWord.user_id == user_id))
+
+        if (word is None) or (word.is_active is False):
+            raise LookupError("Meaning not found in your dictionary")
+        
+        word.is_active = False
+
+        self.db.commit()
+        self.db.refresh(word)
+
+        return word
