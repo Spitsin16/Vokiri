@@ -11,6 +11,7 @@ from backend.importers.freedict_parser import (
     iter_entries,
 )
 from backend.models.dictionary import Definition, DictionarySource, Lexeme, Pronunciation, SourceSense,Translation
+from backend.utils.text import normalize_dictionary_text
 
 SOURCE_NAME = "FreeDict English-Russian"
 SOURCE_VERSION = "2025.11.23"
@@ -71,7 +72,7 @@ def create_lexeme(session: Session,source: DictionarySource,entry: DictionaryEnt
     lexeme = Lexeme(
         source_id=source.id,
         lemma=entry.lemma,
-        normalized_lemma=entry.lemma.casefold(),
+        normalized_lemma=normalize_dictionary_text(entry.lemma),
         part_of_speech=entry.part_of_speech or "unknown",
     )
 
@@ -104,7 +105,7 @@ def create_translations(session: Session, sense: SourceSense, translations: tupl
                                   language="ru",
                                   source_order=source_order,
                                   text=text,
-                                  normalized_text=" ".join(text.casefold().split()),
+                                  normalized_text=normalize_dictionary_text(text),
                                   verification_status="imported")
 
         session.add(translation)

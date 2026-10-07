@@ -15,6 +15,8 @@ def lookup_word(word: str, db: Session=Depends(get_db)):
         return service.lookup_word(word)
     except ValueError:
         raise HTTPException(status_code=404, detail="Word not found")
+    except LookupError:
+        raise HTTPException(status_code=422, detail="Word must be written by single language")
 
 @router.get("/search")
 def search(q: str = Query(min_length=2), db: Session=Depends(get_db)):
@@ -24,4 +26,6 @@ def search(q: str = Query(min_length=2), db: Session=Depends(get_db)):
         return service.search(q)
     except ValueError:
         raise HTTPException(status_code=422, detail="Enter at least 2 characters")
+    except LookupError:
+        raise HTTPException(status_code=422, detail="Word must be written by single language")
 
