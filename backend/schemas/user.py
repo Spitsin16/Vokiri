@@ -23,9 +23,11 @@ class TokenResponse(BaseModel):
 
 class AddWord(BaseModel):
     sense_id: int = Field(gt=0)
+    preferred_translation_id: int | None = Field(default= None, gt=0)
+    custom_translation: str | None = Field(default= None, max_length=255 ,min_length=1)
+
 
 class DeleteWordResponse(BaseModel):
     source_sense_id: int
     is_active: bool 
-
 

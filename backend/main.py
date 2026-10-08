@@ -1,7 +1,11 @@
 from fastapi import FastAPI
+
+from backend.exceptions.exception_handlers import register_exception_handlers
 from backend.routers import dictionary, auth, user_words
 
 app = FastAPI(title="Vokiri API")
+
+register_exception_handlers(app)
 
 @app.get("/health")
 def health():

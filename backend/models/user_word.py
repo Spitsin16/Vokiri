@@ -1,5 +1,5 @@
 from backend.database import Base
-from sqlalchemy import DateTime, Boolean, UniqueConstraint, ForeignKey
+from sqlalchemy import DateTime, Boolean, UniqueConstraint, ForeignKey, String
 from sqlalchemy.orm import Mapped, mapped_column
 from datetime import datetime, timezone
 
@@ -20,3 +20,7 @@ class UserWord(Base):
     is_active: Mapped[bool] = mapped_column(Boolean, default=True, nullable=False)
 
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True),default=utc_now, nullable=False)
+
+    preferred_translation_id: Mapped[int | None] = mapped_column(ForeignKey("translations.id", ondelete="SET NULL"),nullable=True,)
+
+    custom_translation: Mapped[str | None] = mapped_column(String(255),nullable=True,)
