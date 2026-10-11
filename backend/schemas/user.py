@@ -28,6 +28,21 @@ class AddWord(BaseModel):
 
 
 class DeleteWordResponse(BaseModel):
-    source_sense_id: int
-    is_active: bool 
+    model_config = ConfigDict(from_attributes=True)
 
+    source_sense_id: int
+    is_active: bool
+
+class GetAllWordsResponse(BaseModel):
+    sense_id: int
+    word: str
+    translation: str
+    created_at: datetime
+
+class AddWordResponse(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    user_id: int
+    source_sense_id: int
+    preferred_translation_id: int | None
+    custom_translation: str | None
