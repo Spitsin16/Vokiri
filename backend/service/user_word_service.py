@@ -70,14 +70,17 @@ class UserWordService:
             if word.is_active == True:
                 sense = self.db.scalar(select(SourceSense).where(SourceSense.id == word.source_sense_id))
                 lexeme = self.db.scalar(select(Lexeme).where(Lexeme.id == sense.lexeme_id))
-                translations = self.db.scalars(select(Translation.text).where(Translation.sense_id == sense.id).order_by(Translation.source_order)).all()
+                if word.custom_translation is None:
+                    translation = self.db.scalar(select(Translation.text).where(Translation.sense_id == sense.id,Translation.id == word.preferred_translation_id))
+                else:
+                    translation = word.custom_translation
 
                 result.append(
                 {
                     "id": word.id,
                     "sense_id": sense.id,
                     "word": lexeme.lemma,
-                    "translation": translations,
+                    "translation": translation,
                     "is_active": word.is_active,
                     "created_at": word.created_at,
                 }

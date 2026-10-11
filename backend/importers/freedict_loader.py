@@ -4,7 +4,7 @@ from pathlib import Path
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
-from backend.database import Base, engine
+from backend.database import  engine
 from backend.importers.freedict_parser import (
     DATASET_PATH,
     DictionaryEntry,
@@ -162,7 +162,6 @@ def create_dictionary_entry(
     return lexeme
 
 def load_dictionary(dataset_path: Path = DATASET_PATH):
-    Base.metadata.create_all(engine)
 
     with Session(engine) as session:
         source = get_or_create_dictionary_source(
