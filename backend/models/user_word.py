@@ -1,7 +1,7 @@
 from backend.database import Base
-from sqlalchemy import DateTime, Boolean, UniqueConstraint, ForeignKey, String
+from sqlalchemy import DateTime, Boolean, UniqueConstraint, ForeignKey, String, Integer, Date, text
 from sqlalchemy.orm import Mapped, mapped_column
-from datetime import datetime, timezone
+from datetime import datetime, timezone, date
 
 def utc_now():
     return datetime.now(timezone.utc)
@@ -24,3 +24,7 @@ class UserWord(Base):
     preferred_translation_id: Mapped[int | None] = mapped_column(ForeignKey("translations.id", ondelete="SET NULL"),nullable=True,)
 
     custom_translation: Mapped[str | None] = mapped_column(String(255),nullable=True,)
+
+    review_step: Mapped[int] = mapped_column(Integer, default=0, server_default=text("0"), nullable= False)
+
+    next_review_date: Mapped[date | None] = mapped_column(Date, nullable=True)

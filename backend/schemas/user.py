@@ -19,7 +19,7 @@ class UserResponse(BaseModel):
 
 class TokenResponse(BaseModel):
     access_token: str
-    token_type: str 
+    token_type: str
 
 class AddWord(BaseModel):
     sense_id: int = Field(gt=0)
@@ -34,6 +34,7 @@ class DeleteWordResponse(BaseModel):
     is_active: bool
 
 class GetAllWordsResponse(BaseModel):
+    id: int
     sense_id: int
     word: str
     translation: str
@@ -42,6 +43,7 @@ class GetAllWordsResponse(BaseModel):
 class AddWordResponse(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
+    id: int
     user_id: int
     source_sense_id: int
     preferred_translation_id: int | None
