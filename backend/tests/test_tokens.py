@@ -1,4 +1,4 @@
-from backend.tokens import create_access_token, decode_access_token
+from backend.utils.tokens import create_access_token, decode_access_token
 import pytest
 import jwt
 

@@ -2,7 +2,7 @@ from sqlalchemy.orm import Session
 from sqlalchemy import select
 from backend.models.user import User
 from backend.utils.passwords import hash_password, verify_password
-from backend.tokens import create_access_token
+from backend.utils.tokens import create_access_token
 
 class AuthService:
     def __init__(self, db: Session):
