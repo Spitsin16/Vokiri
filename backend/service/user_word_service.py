@@ -1,5 +1,5 @@
 from sqlalchemy.orm import Session
-from sqlalchemy import select,or_
+from sqlalchemy import select,or_, case
 from backend.exceptions.exceptions_classes import ConflictError, NotFoundError, ValidationError
 from backend.models.dictionary import SourceSense, Lexeme, Translation
 from backend.models.user_word import UserWord
@@ -29,7 +29,7 @@ class UserWordService:
                 raise ValidationError("Translation does not belong to this meaning")
 
         if custom_translation is not None:
-            custom_translation = custom_translation.strip()
+            custom_translation = custom_translation.strip().casefold()
 
             if not custom_translation:
                 raise ValidationError("Custom translation cannot be empty")
@@ -103,12 +103,20 @@ class UserWordService:
         return word
 
     def get_today_cards(self, user_id: int, limit: int):
-        words = self.db.scalars(select(UserWord).where(UserWord.user_id == user_id,UserWord.is_active == True,or_(UserWord.next_review_date.is_(None),UserWord.next_review_date <= date.today(),),).limit(limit)).all()
+        words = self.db.scalars(select(UserWord).where(UserWord.user_id == user_id,UserWord.is_active == True,or_(UserWord.next_review_date.is_(None),UserWord.next_review_date <= date.today(),),).order_by(
+        case(
+            (UserWord.next_review_date.is_(None), 1),
+            else_=0,
+        ),
+        UserWord.next_review_date.asc(),
+        UserWord.created_at.asc(),
+    )
+    .limit(limit)
+).all()
 
-        eligible_ids = [word.id for word in words]
-        all_words = self.get_all_words(user_id)
+        all_words_by_id = {word["id"]: word for word in self.get_all_words(user_id)}
 
-        return [word for word in all_words if word["id"] in eligible_ids]
+        return [all_words_by_id[word.id] for word in words]
 
     def answer_card(self, user_id: int, user_word_id: int, answer: str):
 
@@ -135,7 +143,8 @@ class UserWordService:
             if word.review_step<0:
                 word.review_step+=0
         elif answer == "hard":
-            word.review_step+=0
+            word.review_step-=1
+            word.review_step = max(0,word.review_step)
         else:
             raise(ValidationError("Unknown review answer"))
         word.next_review_date = date.today() + timedelta(view_table[word.review_step])
