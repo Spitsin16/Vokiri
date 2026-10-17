@@ -9,11 +9,11 @@ load_dotenv(PROJECT_ROOT / ".env")
 
 
 SECRET_KEY = os.getenv("SECRET_KEY")
+GIGACHAT_CREDENTIALS = os.getenv("GIGACHAT_CREDENTIALS")
+GIGACHAT_VERSION= os.getenv("GIGACHAT_VERSION")
 JWT_ALGORITHM = os.getenv("JWT_ALGORITHM", "HS256")
 ACCESS_TOKEN_EXPIRE_MINUTES = int(
     os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES", "30")
 )
-
-
 if SECRET_KEY is None:
     raise RuntimeError("SECRET_KEY is not configured")
