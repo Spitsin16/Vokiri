@@ -4,36 +4,54 @@ import json
 from backend.config import GIGACHAT_CREDENTIALS, GIGACHAT_VERSION
 from gigachat import GigaChat
 from gigachat.exceptions import GigaChatException
-
+from sqlalchemy import select, case, or_
+from datetime import date
+from backend.models.user_word import UserWord
+from backend.service.user_word_service import UserWordService
 class AiIntegration:
     def __init__(self,db):
         self.db = db
     
-    def generate_text(self, level:str, min_words: int, max_words:int, theme: str):
+    def generate_text(self, level:str, min_words: int, max_words:int, theme: str,user_id: int ):
+        service = UserWordService(self.db)
+        words = service.get_today_cards(user_id, 5)
+        word_list=[]
+
+        for word in words:
+            word_list.append({"word":word["word"], "translation": word["translation"]})
 
         prompt = f"""
-You are the reading-text generator for Vokiri, an English-learning application.
+You are an educational writer for Vokiri, an English-learning application.
 
-Create one coherent and original English reading text.
+Create one coherent and engaging English reading text.
 
-Parameters:
+USER PARAMETERS:
 - CEFR level: {level}
 - Topic: {theme}
-- Required length: from {min_words} to {max_words} words
+- Required length: {min_words}-{max_words} words
 
-Requirements:
+TARGET VOCABULARY:
+{word_list}
 
-1. Match the requested CEFR level in grammar, vocabulary, and sentence structure.
+VOCABULARY RULES:
+1. Use every target English word naturally in the text.
+2. Use each word with the meaning indicated by its Russian translation.
+3. Do not place the words in an artificial list or unrelated sentences.
+4. Make their meaning understandable from the surrounding context.
+5. Preserve the exact spelling of every target word at least once.
+
+CONTENT RULES:
+1. Match the requested CEFR level in vocabulary, grammar, and sentence structure.
 2. Keep the entire text focused on the requested topic.
-3. Write an engaging story or realistic situation, not a list of unrelated facts.
+3. Write a coherent article, biography, historical account, or realistic story.
 4. Stay between {min_words} and {max_words} words.
 5. Give the text a short English title.
-6. Divide the text into natural paragraphs when appropriate.
-7. Do not include translations, exercises, explanations, vocabulary lists, or comments about the task.
-8. Do not use Markdown.
-9. If the topic mentions a real person, university, company, or event, do not invent specific facts, dates, statistics, or quotations.
+6. Divide the text into natural paragraphs.
+7. Do not include translations, exercises, vocabulary lists, Markdown, or comments about the task.
+8. Do not invent quotations, dates, statistics, names, events, or biographical details.
+9. If a factual detail is uncertain, omit it.
 
-Return only valid JSON in exactly this format:
+Return only valid JSON:
 
 {{
   "title": "Short English title",

@@ -7,7 +7,7 @@ from alembic import context
 
 from backend.database import DATABASE_URL
 from backend.database import Base
-from backend.models import dictionary, user, user_word
+from backend.models import dictionary, user, user_word, text
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.

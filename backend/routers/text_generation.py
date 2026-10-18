@@ -12,4 +12,4 @@ router = APIRouter(prefix="/text",tags=["text"])
 def create_text(data: TextCreate, db: Session=Depends(get_db), current_user: User = Depends(get_current_user)):
     service = AiIntegration(db)
 
-    return service.generate_text(data.level, data.min_words,data.max_words, data.theme)
+    return service.generate_text(data.level, data.min_words,data.max_words, data.theme,current_user.id)
