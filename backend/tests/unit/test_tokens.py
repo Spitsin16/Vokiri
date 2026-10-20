@@ -5,7 +5,7 @@ from backend.config import SECRET_KEY, JWT_ALGORITHM, ACCESS_TOKEN_EXPIRE_MINUTE
 from datetime import datetime, timezone, timedelta
 def test_check_correct_token():
     user_id = 15
-    token = create_access_token(15)
+    token = create_access_token(user_id)
 
     payload = decode_access_token(token)
 
@@ -26,10 +26,10 @@ def test_expire_token():
     with pytest.raises(jwt.ExpiredSignatureError):
         decode_access_token(token)
 
-def wrong_signature():
+def test_decode_rejects_token_with_wrong_signature():
     payload = {"sub": 30,
                "exp": datetime.now(timezone.utc) + timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)}
     token = jwt.encode(payload, "dfjdfd ", algorithm=JWT_ALGORITHM)
 
-    with pytest.raises(jwt.ImmatureSignatureError):
-        decode_access_token(token) 
+    with pytest.raises(jwt.InvalidSignatureError):
+        decode_access_token(token)
