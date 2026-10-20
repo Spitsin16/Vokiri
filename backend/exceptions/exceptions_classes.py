@@ -12,3 +12,6 @@ class NotFoundError(AppError):
 
 class ConflictError(AppError):
     status_code = 409
+
+class AuthenticationError(AppError):
+    status_code = 401

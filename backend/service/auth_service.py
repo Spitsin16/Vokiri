@@ -4,6 +4,8 @@ from backend.models.user import User
 from backend.utils.passwords import hash_password, verify_password
 from backend.utils.tokens import create_access_token
 
+from backend.exceptions.exceptions_classes import AuthenticationError, ConflictError
+
 class AuthService:
     def __init__(self, db: Session):
         self.db = db
@@ -14,7 +16,7 @@ class AuthService:
         existing_user = self.db.scalar(select(User).where(User.email == normalized_email))
 
         if existing_user is not None:
-            raise ValueError("Email already registered")
+            raise ConflictError("Email already registered")
         
         hashed_password = hash_password(password)
 
@@ -34,12 +36,12 @@ class AuthService:
         user = self.db.scalar(select(User).where(User.email == normalized_email))
 
         if user is None:
-            raise ValueError("Wrong email or password")
+            raise AuthenticationError("Wrong email or password")
         
         password_is_valid = verify_password(password, user.password_hash)
 
         if password_is_valid is False:
-            raise ValueError("Wrong email or password")
+            raise AuthenticationError("Wrong email or password")
         
         token = create_access_token(user.id)
 
