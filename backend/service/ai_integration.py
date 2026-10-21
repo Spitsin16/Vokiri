@@ -3,7 +3,7 @@ import json
 from backend.config import GIGACHAT_CREDENTIALS, GIGACHAT_VERSION
 from gigachat import GigaChat
 from gigachat.exceptions import GigaChatException
-from sqlalchemy import select, case, or_
+
 
 from backend.service.user_word_service import UserWordService
 from backend.models.text import AllText, UserText
