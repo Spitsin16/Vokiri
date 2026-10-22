@@ -1,0 +1,31 @@
+from fastapi import APIRouter, Depends
+from sqlalchemy.orm import Session
+from backend.database import get_db
+from backend.dependencies import get_current_user
+from backend.schemas.user import AddWord, DeleteWordResponse, GetAllWordsResponse, AddWordResponse
+from backend.models.user import User
+from backend.service.user_word_service import UserWordService
+
+router = APIRouter(prefix="/user_words",tags=["user_words"])
+
+@router.post("/add",status_code=201,response_model=AddWordResponse)
+def add_word(data: AddWord, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
+
+    service = UserWordService(db)
+
+    return service.add_word(current_user.id, data.sense_id, data.preferred_translation_id, data.custom_translation)
+
+@router.get("/get_all_words", response_model=list[GetAllWordsResponse])
+def get_words(db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
+
+    service = UserWordService(db)
+
+    return service.get_all_words(current_user.id)
+    
+@router.delete("/delete_word/{sense_id}", response_model=DeleteWordResponse)
+def delete_word(sense_id: int ,db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
+
+    service = UserWordService(db)
+
+    return service.delete_word(current_user.id,sense_id)
+    
