@@ -48,3 +48,23 @@ def client(db_session):
             yield test_client
     finally:
         app.dependency_overrides.clear()
+
+@pytest.fixture
+def authenticated_user(client):
+    email = "test@mail.com"
+    password = "qwerty1234"
+    register_response = client.post("/auth/register", json = {"email": email,
+                                          "password": password})
+    assert register_response.status_code == 201
+
+    login_response = client.post("/auth/login", json = {"email": email,
+                                          "password": password})
+    assert login_response.status_code == 200
+
+    body = login_response.json()
+    token = body["access_token"]
+
+    return {"email": email,
+            "password": password,
+            "token": token,
+            "headers": {"Authorization":f"Bearer {token}"}}

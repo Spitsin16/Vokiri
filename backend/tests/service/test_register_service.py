@@ -29,6 +29,3 @@ def test_register_with_duplicate_email(db_session: Session):
 
     with pytest.raises(ConflictError):
         service.register_user("user@mail.com", password)
-
-
-

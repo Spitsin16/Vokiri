@@ -1,3 +1,4 @@
+
 import pytest
 
 @pytest.mark.parametrize("payload", [{"email":"spec@mail",
@@ -32,5 +33,3 @@ def test_registration_rejects_duplicate_email(client):
     assert response2.json() == {
         "detail": "Email already registered"
     }
-
-
