@@ -1,0 +1,8 @@
+:root {
+ --vokiri-paper:#f3f3ed; --vokiri-ink:#262c20; --vokiri-signal:#d6f477;
+ --vokiri-olive:#637239; --vokiri-quiet:#e2e7d9; --vokiri-white:#ffffff;
+ --vokiri-muted:#656b5b; --vokiri-weak:#875934; --vokiri-weak-surface:#f7ede3;
+ --vokiri-display:'Manrope',sans-serif; --vokiri-body:'DM Sans',sans-serif;
+ --vokiri-card-radius:32px; --vokiri-small-radius:22px; --vokiri-field-radius:16px;
+ --vokiri-motion-press:160ms; --vokiri-motion-panel:240ms;
+}
