@@ -13,9 +13,9 @@ class AiIntegration:
     def __init__(self,db):
         self.db = db
 
-    def generate_text(self, level:str, min_words: int, max_words:int, theme: str,user_id: int ):
+    def generate_text(self, level:str, min_words: int, max_words:int, theme: str,user_id: int, limit_words: int):
         service = UserWordService(self.db)
-        words = service.get_today_cards(user_id, 5)
+        words = service.get_today_cards(user_id, limit_words)
         word_list=[]
 
         for word in words:
