@@ -7,10 +7,7 @@ from sqlalchemy.orm import sessionmaker
 from backend.database import Base, get_db
 from backend.main import app
 
-import backend.models.dictionary
-import backend.models.text
-import backend.models.user
-import backend.models.user_word
+from backend.models.text import  AllText
 
 @pytest.fixture
 def db_session(tmp_path):
@@ -68,3 +65,24 @@ def authenticated_user(client):
             "password": password,
             "token": token,
             "headers": {"Authorization":f"Bearer {token}"}}
+
+@pytest.fixture
+def create_text(db_session):
+    text = AllText(
+        title="Football story",
+        theme="Football",
+        level="B1",
+        target_words=[
+            {
+                "word": "achieve",
+                "translation": "достигать",
+            }
+        ],
+        word_count=100,
+        content="Test English text.",
+    )
+
+    db_session.add(text)
+    db_session.flush()
+    db_session.commit()
+    return text
