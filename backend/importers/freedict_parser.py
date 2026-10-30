@@ -42,6 +42,11 @@ def element_text(element: ET.Element) -> str:
     return normalize_text("".join(element.itertext()))
 
 
+def pronunciation_text(element: ET.Element) -> str:
+    text = element_text(element)
+    return text.split("<", 1)[0].strip()
+
+
 def parse_entry(element: ET.Element) -> DictionaryEntry | None:
     lemma = normalize_text(
         element.findtext(f"./{TEI_NAMESPACE}form/{TEI_NAMESPACE}orth")
@@ -55,7 +60,7 @@ def parse_entry(element: ET.Element) -> DictionaryEntry | None:
     pronunciations = tuple(
         text
         for node in element.findall(f"./{TEI_NAMESPACE}form/{TEI_NAMESPACE}pron")
-        if (text := element_text(node))
+        if (text := pronunciation_text(node))
     )
 
     senses: list[DictionarySense] = []
