@@ -1,5 +1,10 @@
 import pytest
 
+import backend.models.dictionary
+import backend.models.text
+import backend.models.user
+import backend.models.user_word
+
 from fastapi.testclient import TestClient
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
