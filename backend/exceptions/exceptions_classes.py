@@ -15,3 +15,9 @@ class ConflictError(AppError):
 
 class AuthenticationError(AppError):
     status_code = 401
+
+class AiServiceError(AppError):
+    status_code = 502
+
+class RateLimitError(AppError):
+    status_code = 429
