@@ -1,9 +1,10 @@
 from backend.models.dictionary import Lexeme, SourceSense, Translation, Definition, Pronunciation
 from sqlalchemy import select
 from backend.utils.text import detect_dictionary_language, normalize_dictionary_text
+from sqlalchemy.orm import Session
 
 class DictionaryService:
-    def __init__(self,db):
+    def __init__(self,db:Session):
         self.db = db
 
     def lookup_word(self, word: str):

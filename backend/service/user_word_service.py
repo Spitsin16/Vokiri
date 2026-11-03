@@ -4,6 +4,7 @@ from backend.exceptions.exceptions_classes import ConflictError, NotFoundError, 
 from backend.models.dictionary import SourceSense, Lexeme, Translation
 from backend.models.user_word import UserWord
 from datetime import date, timedelta
+from backend.service.stats_service import Stats
 
 class UserWordService:
     def __init__(self, db: Session):
@@ -148,6 +149,8 @@ class UserWordService:
         else:
             raise(ValidationError("Unknown review answer"))
         word.next_review_date = date.today() + timedelta(view_table[word.review_step])
+        activity_service = Stats(self.db)
+        activity_service.record_review(user_id)
         self.db.commit()
         self.db.refresh(word)
 
