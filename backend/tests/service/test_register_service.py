@@ -17,6 +17,7 @@ def test_register_user(db_session: Session):
     user_from_database = db_session.scalar(select(User).where(User.id==user.id))
 
     assert user.id is not None
+    assert user_from_database.email == "user@example.com"
     assert user_from_database.password_hash != password
     assert verify_password(password, user_from_database.password_hash) is True
 
@@ -28,4 +29,4 @@ def test_register_with_duplicate_email(db_session: Session):
     service.register_user("user@mail.com", password)
 
     with pytest.raises(ConflictError):
-        service.register_user("user@mail.com", password)
+        service.register_user("  USER@MAIL.COM  ", password)

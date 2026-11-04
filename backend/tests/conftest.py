@@ -1,5 +1,7 @@
 import pytest
+from uuid import uuid4
 
+import backend.models.activity
 import backend.models.dictionary
 import backend.models.text
 import backend.models.user
@@ -12,7 +14,16 @@ from sqlalchemy.orm import sessionmaker
 from backend.database import Base, get_db
 from backend.main import app
 
-from backend.models.text import  AllText
+from backend.models.dictionary import (
+    Definition,
+    DictionarySource,
+    Lexeme,
+    Pronunciation,
+    SourceSense,
+    Translation,
+)
+from backend.models.text import AllText
+from backend.models.user import User
 
 @pytest.fixture
 def db_session(tmp_path):
@@ -91,3 +102,105 @@ def create_text(db_session):
     db_session.flush()
     db_session.commit()
     return text
+
+
+@pytest.fixture
+def user_factory(db_session):
+    def create_user(email: str = "user@example.com") -> User:
+        user = User(
+            email=email,
+            password_hash="test-password-hash",
+        )
+        db_session.add(user)
+        db_session.flush()
+        return user
+
+    return create_user
+
+
+@pytest.fixture
+def dictionary_entry_factory(db_session):
+    def create_dictionary_entry(
+        lemma: str = "reduce",
+        translations: tuple[str, ...] = ("уменьшать",),
+        definitions: tuple[str, ...] = ("To make something smaller.",),
+        pronunciations: tuple[str, ...] = ("/rɪˈdjuːs/",),
+        part_of_speech: str = "verb",
+    ):
+        unique_suffix = uuid4().hex
+        source = DictionarySource(
+            name=f"test-source-{unique_suffix}",
+            version="1",
+            license_name="test",
+            license_url="https://example.com/license",
+            source_url="https://example.com/dictionary",
+            content_sha256="a" * 64,
+        )
+        db_session.add(source)
+        db_session.flush()
+
+        lexeme = Lexeme(
+            source_id=source.id,
+            lemma=lemma,
+            normalized_lemma=lemma.casefold(),
+            part_of_speech=part_of_speech,
+        )
+        db_session.add(lexeme)
+        db_session.flush()
+
+        sense = SourceSense(
+            lexeme_id=lexeme.id,
+            source_order=1,
+        )
+        db_session.add(sense)
+        db_session.flush()
+
+        translation_models = []
+        for source_order, translation_text in enumerate(translations, start=1):
+            translation = Translation(
+                sense_id=sense.id,
+                language="ru",
+                source_order=source_order,
+                text=translation_text,
+                normalized_text=translation_text.casefold(),
+            )
+            db_session.add(translation)
+            translation_models.append(translation)
+
+        definition_models = []
+        for source_order, definition_text in enumerate(definitions, start=1):
+            definition = Definition(
+                sense_id=sense.id,
+                language="en",
+                source_order=source_order,
+                text=definition_text,
+                text_sha256=str(source_order) * 64,
+            )
+            db_session.add(definition)
+            definition_models.append(definition)
+
+        pronunciation_models = []
+        for source_order, pronunciation_text in enumerate(
+            pronunciations,
+            start=1,
+        ):
+            pronunciation = Pronunciation(
+                lexeme_id=lexeme.id,
+                text=pronunciation_text,
+                source_order=source_order,
+            )
+            db_session.add(pronunciation)
+            pronunciation_models.append(pronunciation)
+
+        db_session.flush()
+
+        return {
+            "source": source,
+            "lexeme": lexeme,
+            "sense": sense,
+            "translations": translation_models,
+            "definitions": definition_models,
+            "pronunciations": pronunciation_models,
+        }
+
+    return create_dictionary_entry

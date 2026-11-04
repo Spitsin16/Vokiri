@@ -9,7 +9,7 @@ def test_success_login(db_session: Session):
     service = AuthService(db_session)
 
     service.register_user("user@mail.com", password)
-    result = service.login("user@mail.com", password)
+    result = service.login("  USER@MAIL.COM  ", password)
 
     assert result["token_type"] == "bearer"
     assert result["access_token"] != ""
