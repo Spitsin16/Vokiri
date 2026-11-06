@@ -6,6 +6,7 @@ from sqlalchemy.orm import Session
 from backend.models.activity import DailyActivity
 from backend.models.user import User
 from backend.service.stats_service import Stats
+from backend.utils.dates import moscow_today
 
 
 def create_user(db_session: Session, email: str) -> User:
@@ -46,7 +47,7 @@ def test_record_review_creates_today_activity(db_session: Session):
     activity = db_session.scalar(
         select(DailyActivity).where(
             DailyActivity.user_id == user.id,
-            DailyActivity.activity_date == date.today(),
+            DailyActivity.activity_date == moscow_today(),
         )
     )
 
@@ -66,7 +67,7 @@ def test_record_review_increments_existing_activity(db_session: Session):
     activity = db_session.scalar(
         select(DailyActivity).where(
             DailyActivity.user_id == user.id,
-            DailyActivity.activity_date == date.today(),
+            DailyActivity.activity_date == moscow_today(),
         )
     )
     activity_count = db_session.scalar(
@@ -81,7 +82,7 @@ def test_record_review_increments_existing_activity(db_session: Session):
 
 def test_current_streak_can_end_yesterday(db_session: Session):
     user = create_user(db_session, "third@example.com")
-    today = date.today()
+    today = moscow_today()
     add_activity_dates(
         db_session,
         user.id,
@@ -98,7 +99,7 @@ def test_current_streak_can_end_yesterday(db_session: Session):
 
 def test_expired_streak_does_not_remove_historical_max(db_session: Session):
     user = create_user(db_session, "fourth@example.com")
-    today = date.today()
+    today = moscow_today()
     add_activity_dates(
         db_session,
         user.id,
@@ -118,7 +119,7 @@ def test_expired_streak_does_not_remove_historical_max(db_session: Session):
 def test_streaks_use_only_requested_user_activity(db_session: Session):
     first_user = create_user(db_session, "fifth@example.com")
     second_user = create_user(db_session, "sixth@example.com")
-    today = date.today()
+    today = moscow_today()
     add_activity_dates(db_session, first_user.id, [today])
     add_activity_dates(
         db_session,

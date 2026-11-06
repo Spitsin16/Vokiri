@@ -14,6 +14,15 @@ GIGACHAT_CREDENTIALS = os.getenv("GIGACHAT_CREDENTIALS")
 GIGACHAT_VERSION= os.getenv("GIGACHAT_VERSION")
 JWT_ALGORITHM = os.getenv("JWT_ALGORITHM", "HS256")
 AI_DAILY_GENERATION_LIMIT = int(os.getenv("AI_DAILY_GENERATION_LIMIT"))
+OWNER_ID = int(os.getenv("OWNER_ID"))
+FRONTEND_ORIGINS = [
+    origin.strip()
+    for origin in os.getenv(
+        "FRONTEND_ORIGINS",
+        "http://localhost:4173,http://127.0.0.1:4173",
+    ).split(",")
+    if origin.strip()
+]
 ACCESS_TOKEN_EXPIRE_MINUTES = int(
     os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES", "30")
 )

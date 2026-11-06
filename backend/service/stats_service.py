@@ -2,8 +2,9 @@ from sqlalchemy.orm import Session
 from sqlalchemy import func, select
 from backend.models.user_word import UserWord
 from backend.models.activity import DailyActivity
-from datetime import date, timedelta
+from datetime import timedelta
 from backend.utils.activity_streak import get_streak_list
+from backend.utils.dates import moscow_today
 class Stats:
     def __init__(self,db:Session):
         self.db = db
@@ -14,7 +15,7 @@ class Stats:
         return {"Words in vocablury": word_count}
     
     def record_review(self, user_id:int):
-        today = date.today()
+        today = moscow_today()
 
         activity = self.db.scalar(select(DailyActivity).where(DailyActivity.user_id==user_id, DailyActivity.activity_date==today))
         if activity is None:
@@ -28,7 +29,7 @@ class Stats:
     def get_current_streak(self, user_id:int):
         activity_dates = self.db.scalars(select(DailyActivity.activity_date).where(DailyActivity.user_id==user_id).order_by(DailyActivity.activity_date.asc())).all()
 
-        today = date.today()
+        today = moscow_today()
         yesterday = today - timedelta(days=1)
         
         if not activity_dates:

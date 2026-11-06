@@ -1,11 +1,10 @@
-from datetime import date
-
 from sqlalchemy import func, select
 
 from backend.models.activity import DailyActivity
 from backend.models.dictionary import DictionarySource, Lexeme, SourceSense
 from backend.models.user import User
 from backend.models.user_word import UserWord
+from backend.utils.dates import moscow_today
 
 
 def create_user_word(db_session, authenticated_user) -> UserWord:
@@ -72,7 +71,7 @@ def test_answer_card_creates_and_increments_daily_activity(
     activities = db_session.scalars(
         select(DailyActivity).where(
             DailyActivity.user_id == word.user_id,
-            DailyActivity.activity_date == date.today(),
+            DailyActivity.activity_date == moscow_today(),
         )
     ).all()
 

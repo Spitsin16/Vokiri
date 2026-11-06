@@ -17,3 +17,8 @@ def get_current_text(text_id: int, db: Session = Depends(get_db), current_user: 
 
     service = UserTextService(db) 
     return service.get_certain_text(text_id,current_user.id)
+
+@router.delete("/delete_text/{text_id}")
+def delete_text(text_id: int, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
+    service = UserTextService(db)
+    return service.delete_text(current_user.id, text_id)

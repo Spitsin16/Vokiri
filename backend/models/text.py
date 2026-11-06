@@ -25,6 +25,7 @@ class UserText(Base):
     id: Mapped[int] = mapped_column(primary_key=True)
     user_id: Mapped[int] = mapped_column(ForeignKey("users.id",ondelete="CASCADE"),nullable=False)
     text_id: Mapped[int] = mapped_column(ForeignKey("all_texts.id",ondelete="CASCADE"),nullable=False)
+    is_active: Mapped[bool] = mapped_column(default=True,server_default="true",nullable=False)
 
 
 

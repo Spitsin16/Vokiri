@@ -13,7 +13,7 @@ from pydantic import ValidationError as PydanticValidationError
 from datetime import datetime, timezone, timedelta
 from sqlalchemy import select, func
 from backend.exceptions.exceptions_classes import RateLimitError
-from backend.config import AI_DAILY_GENERATION_LIMIT
+from backend.config import AI_DAILY_GENERATION_LIMIT,OWNER_ID
 GIGACHAT_CA_BUNDLE_FILE = (
     Path(__file__).resolve().parent.parent
     / "certs"
@@ -53,7 +53,8 @@ class AiIntegration:
             raise RateLimitError("Too much generations. Daily limit=3")
 
     def generate_text(self, level:str, min_words: int, max_words:int, theme: str,user_id: int, limit_words: int):
-        self.check_generated_limit(user_id)
+        if user_id != OWNER_ID:
+            self.check_generated_limit(user_id)
         service = UserWordService(self.db)
         words = service.get_today_cards(user_id, limit_words)
         word_list=[]

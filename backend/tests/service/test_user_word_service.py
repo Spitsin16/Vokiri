@@ -1,6 +1,7 @@
-from datetime import date, timedelta
+from datetime import timedelta
 
 import pytest
+from sqlalchemy import event
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
@@ -12,6 +13,7 @@ from backend.exceptions.exceptions_classes import (
 from backend.models.activity import DailyActivity
 from backend.models.user_word import UserWord
 from backend.service.user_word_service import UserWordService
+from backend.utils.dates import moscow_today
 
 
 def test_add_word_requires_translation_choice(db_session: Session):
@@ -229,6 +231,44 @@ def test_get_all_words_returns_active_selected_and_custom_translations(
     assert words_by_lemma["customword"]["translation"] == "свой"
 
 
+def test_get_all_words_uses_single_database_query(
+    db_session: Session,
+    user_factory,
+    dictionary_entry_factory,
+):
+    user = user_factory("query-count-words@example.com")
+    first_entry = dictionary_entry_factory(lemma="firstqueryword")
+    second_entry = dictionary_entry_factory(lemma="secondqueryword")
+    service = UserWordService(db_session)
+    service.add_word(
+        user.id,
+        first_entry["sense"].id,
+        first_entry["translations"][0].id,
+        None,
+    )
+    service.add_word(
+        user.id,
+        second_entry["sense"].id,
+        second_entry["translations"][0].id,
+        None,
+    )
+    user_id = user.id
+    query_count = 0
+
+    def count_query(*_args):
+        nonlocal query_count
+        query_count += 1
+
+    event.listen(db_session.bind, "before_cursor_execute", count_query)
+    try:
+        result = service.get_all_words(user_id)
+    finally:
+        event.remove(db_session.bind, "before_cursor_execute", count_query)
+
+    assert len(result) == 2
+    assert query_count == 1
+
+
 def test_delete_word_rejects_missing_or_inactive_word(
     db_session: Session,
     user_factory,
@@ -289,10 +329,10 @@ def test_get_today_cards_returns_due_and_new_words_only(
         inactive_entry["translations"][0].id,
         None,
     )
-    due_word.next_review_date = date.today() - timedelta(days=1)
+    due_word.next_review_date = moscow_today() - timedelta(days=1)
     new_word.next_review_date = None
-    future_word.next_review_date = date.today() + timedelta(days=1)
-    inactive_word.next_review_date = date.today() - timedelta(days=1)
+    future_word.next_review_date = moscow_today() + timedelta(days=1)
+    inactive_word.next_review_date = moscow_today() - timedelta(days=1)
     inactive_word.is_active = False
     db_session.commit()
 
@@ -336,7 +376,7 @@ def test_answer_card_updates_review_schedule(
     result = service.answer_card(user.id, word.id, answer)
 
     assert word.review_step == expected_step
-    assert word.next_review_date == date.today() + timedelta(days=expected_days)
+    assert word.next_review_date == moscow_today() + timedelta(days=expected_days)
     assert result["next_show"] == word.next_review_date
     activity = db_session.scalar(
         select(DailyActivity).where(DailyActivity.user_id == user.id)

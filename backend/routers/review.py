@@ -1,5 +1,5 @@
 from fastapi import APIRouter
-from fastapi import Depends
+from fastapi import Depends, Query
 from sqlalchemy.orm import Session
 from backend.database import get_db
 from backend.models.user import User
@@ -11,7 +11,7 @@ from backend.schemas.review import ReviewAnswer
 router = APIRouter(prefix="/review", tags=["review"])
 
 @router.get("/today",response_model=list[GetAllWordsResponse])
-def get_today_review(limit: int, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
+def get_today_review(limit: int = Query(ge=1, le=50), db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
     service = UserWordService(db)
 
     return service.get_today_cards(current_user.id, limit)

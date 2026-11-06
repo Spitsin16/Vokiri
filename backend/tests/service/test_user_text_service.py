@@ -1,4 +1,5 @@
 import pytest
+from sqlalchemy import event
 from sqlalchemy.orm import Session
 
 from backend.exceptions.exceptions_classes import NotFoundError
@@ -50,6 +51,37 @@ def test_get_all_texts_returns_empty_list(
     service = UserTextService(db_session)
 
     assert service.get_all_texts(user.id) == []
+
+
+def test_get_all_texts_uses_single_database_query(
+    db_session: Session,
+    user_factory,
+):
+    user = user_factory("query-count-texts@example.com")
+    first_text = create_text(db_session, "First query")
+    second_text = create_text(db_session, "Second query")
+    db_session.add_all(
+        [
+            UserText(user_id=user.id, text_id=first_text.id),
+            UserText(user_id=user.id, text_id=second_text.id),
+        ]
+    )
+    db_session.commit()
+    user_id = user.id
+    query_count = 0
+
+    def count_query(*_args):
+        nonlocal query_count
+        query_count += 1
+
+    event.listen(db_session.bind, "before_cursor_execute", count_query)
+    try:
+        result = UserTextService(db_session).get_all_texts(user_id)
+    finally:
+        event.remove(db_session.bind, "before_cursor_execute", count_query)
+
+    assert len(result) == 2
+    assert query_count == 1
 
 
 def test_get_certain_text_returns_owned_text(

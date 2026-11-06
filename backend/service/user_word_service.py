@@ -1,10 +1,11 @@
 from sqlalchemy.orm import Session
-from sqlalchemy import select,or_, case
+from sqlalchemy import and_, case, or_, select
 from backend.exceptions.exceptions_classes import ConflictError, NotFoundError, ValidationError
 from backend.models.dictionary import SourceSense, Lexeme, Translation
 from backend.models.user_word import UserWord
-from datetime import date, timedelta
+from datetime import timedelta
 from backend.service.stats_service import Stats
+from backend.utils.dates import moscow_today
 
 class UserWordService:
     def __init__(self, db: Session):
@@ -65,29 +66,50 @@ class UserWordService:
 
 
 
-    def get_all_words(self, user_id: int):
-        words = self.db.scalars(select(UserWord).where(UserWord.user_id == user_id)).all()
-        result = []
-        for word in words:
-            if word.is_active == True:
-                sense = self.db.scalar(select(SourceSense).where(SourceSense.id == word.source_sense_id))
-                lexeme = self.db.scalar(select(Lexeme).where(Lexeme.id == sense.lexeme_id))
-                if word.custom_translation is None:
-                    translation = self.db.scalar(select(Translation.text).where(Translation.sense_id == sense.id,Translation.id == word.preferred_translation_id))
-                else:
-                    translation = word.custom_translation
-
-                result.append(
-                {
-                    "id": word.id,
-                    "sense_id": sense.id,
-                    "word": lexeme.lemma,
-                    "translation": translation,
-                    "is_active": word.is_active,
-                    "created_at": word.created_at,
-                }
+    def _word_rows_statement(self, user_id: int):
+        return (
+            select(
+                UserWord,
+                SourceSense.id,
+                Lexeme.lemma,
+                Translation.text,
             )
-        return result
+            .join(SourceSense, SourceSense.id == UserWord.source_sense_id)
+            .join(Lexeme, Lexeme.id == SourceSense.lexeme_id)
+            .outerjoin(
+                Translation,
+                and_(
+                    Translation.id == UserWord.preferred_translation_id,
+                    Translation.sense_id == SourceSense.id,
+                ),
+            )
+            .where(
+                UserWord.user_id == user_id,
+                UserWord.is_active.is_(True),
+            )
+        )
+
+    @staticmethod
+    def _serialize_word_row(row):
+        word, sense_id, lemma, selected_translation = row
+        translation = (
+            word.custom_translation
+            if word.custom_translation is not None
+            else selected_translation
+        )
+
+        return {
+            "id": word.id,
+            "sense_id": sense_id,
+            "word": lemma,
+            "translation": translation,
+            "is_active": word.is_active,
+            "created_at": word.created_at,
+        }
+
+    def get_all_words(self, user_id: int):
+        rows = self.db.execute(self._word_rows_statement(user_id)).all()
+        return [self._serialize_word_row(row) for row in rows]
 
     def delete_word(self, user_id: int, sense_id: int):
         word = self.db.scalar(select(UserWord).where(UserWord.source_sense_id == sense_id,UserWord.user_id == user_id))
@@ -104,20 +126,26 @@ class UserWordService:
         return word
 
     def get_today_cards(self, user_id: int, limit: int):
-        words = self.db.scalars(select(UserWord).where(UserWord.user_id == user_id,UserWord.is_active == True,or_(UserWord.next_review_date.is_(None),UserWord.next_review_date <= date.today(),),).order_by(
-        case(
-            (UserWord.next_review_date.is_(None), 1),
-            else_=0,
-        ),
-        UserWord.next_review_date.asc(),
-        UserWord.created_at.asc(),
-    )
-    .limit(limit)
-).all()
-
-        all_words_by_id = {word["id"]: word for word in self.get_all_words(user_id)}
-
-        return [all_words_by_id[word.id] for word in words]
+        statement = (
+            self._word_rows_statement(user_id)
+            .where(
+                or_(
+                    UserWord.next_review_date.is_(None),
+                    UserWord.next_review_date <= moscow_today(),
+                )
+            )
+            .order_by(
+                case(
+                    (UserWord.next_review_date.is_(None), 1),
+                    else_=0,
+                ),
+                UserWord.next_review_date.asc(),
+                UserWord.created_at.asc(),
+            )
+            .limit(limit)
+        )
+        rows = self.db.execute(statement).all()
+        return [self._serialize_word_row(row) for row in rows]
 
     def answer_card(self, user_id: int, user_word_id: int, answer: str):
 
@@ -148,7 +176,7 @@ class UserWordService:
             word.review_step = max(0,word.review_step)
         else:
             raise(ValidationError("Unknown review answer"))
-        word.next_review_date = date.today() + timedelta(view_table[word.review_step])
+        word.next_review_date = moscow_today() + timedelta(view_table[word.review_step])
         activity_service = Stats(self.db)
         activity_service.record_review(user_id)
         self.db.commit()

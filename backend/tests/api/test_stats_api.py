@@ -7,6 +7,7 @@ from backend.models.activity import DailyActivity
 from backend.models.dictionary import DictionarySource, Lexeme, SourceSense
 from backend.models.user import User
 from backend.models.user_word import UserWord
+from backend.utils.dates import moscow_today
 
 
 def get_authenticated_user_id(db_session, authenticated_user) -> int:
@@ -104,7 +105,7 @@ def test_current_streak_returns_latest_consecutive_days(
     db_session,
 ):
     user_id = get_authenticated_user_id(db_session, authenticated_user)
-    today = date.today()
+    today = moscow_today()
     add_activity_dates(
         db_session,
         user_id,
@@ -132,7 +133,7 @@ def test_current_streak_returns_zero_when_streak_expired(
     db_session,
 ):
     user_id = get_authenticated_user_id(db_session, authenticated_user)
-    today = date.today()
+    today = moscow_today()
     add_activity_dates(
         db_session,
         user_id,
@@ -157,7 +158,7 @@ def test_max_streak_returns_longest_sequence(
     db_session,
 ):
     user_id = get_authenticated_user_id(db_session, authenticated_user)
-    today = date.today()
+    today = moscow_today()
     add_activity_dates(
         db_session,
         user_id,
